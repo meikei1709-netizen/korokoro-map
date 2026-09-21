@@ -1,0 +1,79 @@
+# サイトを GitHub Pages に公開します。
+#   ・index.html などを push したとき
+#   ・毎日1回（公式ページから新しいにゃんこを取り込んでから公開）
+#   ・Actions タブの「Run workflow」ボタンを押したとき
+# 公式ページの取り込みに失敗しても、いまのデータでサイトは公開されます（最後に赤くなって知らせます）。
+name: deploy-site
+on:
+  push:
+    branches: [main]
+  schedule:
+    - cron: "17 21 * * *"   # 毎日 06:17（日本時間）
+  workflow_dispatch: {}
+ 
+concurrency:
+  group: pages
+  cancel-in-progress: false
+ 
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write        # cats.json / index.html の更新をコミットするため
+    outputs:
+      update_failed: ${{ steps.flag.outputs.failed }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: 公式ページから新しいにゃんこを取り込む（名前と地域だけ・画像は取得しない）
+        id: upd
+        continue-on-error: true
+        run: python update_cats.py --json cats.json --html index.html
+      - name: 取り込み結果を記録
+        id: flag
+        run: echo "failed=${{ steps.upd.outcome == 'failure' }}" >> "$GITHUB_OUTPUT"
+      - name: 変更があればコミット
+        run: |
+          if [ -n "$(git status --porcelain cats.json index.html)" ]; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add cats.json index.html
+            git commit -m "Update cats from the official page"
+            git push
+          else
+            echo "変更なし"
+          fi
+      - name: 公開するファイルだけをまとめる
+        run: |
+          mkdir _site
+          cp index.html cats.json _site/
+      - uses: actions/configure-pages@v4
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+ 
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
+ 
+  report:
+    # 取り込みに失敗していたら、公開のあとで赤くして気づけるようにする
+    needs: [build, deploy]
+    if: ${{ needs.build.outputs.update_failed == 'true' }}
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          echo "::error::公式ページの取り込みに失敗しました。ログの「公式ページから新しいにゃんこを取り込む」を確認してください。"
+          exit 1
+ 
