@@ -1,0 +1,947 @@
+{
+ "version": 1,
+ "updated": "2026-09-19",
+ "source": "https://yell-world.jp/gotouchi-korokoronyanko/",
+ "cats": [
+  {
+   "id": "かににゃん",
+   "name": "かににゃん",
+   "area": "北海道",
+   "region": "北海道・東北",
+   "lat": 43.06,
+   "lng": 141.35,
+   "approx": false,
+   "added": null
+  },
+  {
+   "id": "しゃけにゃん",
+   "name": "しゃけにゃん",
+   "area": "北海道",
+   "region": "北海道・東北",
+   "lat": 43.06,
+   "lng": 141.35,
+   "approx": false,
+   "added": null
+  },
+  {
+   "id": "めろんにゃん",
+   "name": "めろんにゃん",
+   "area": "北海道",
+   "region": "北海道・東北",
+   "lat": 43.06,
+   "lng": 141.35,
+   "approx": false,
+   "added": null
+  },
+  {
+   "id": "とうきびにゃん",
+   "name": "とうきびにゃん",
+   "area": "北海道",
+   "region": "北海道・東北",
+   "lat": 43.06,
+   "lng": 141.35,
+   "approx": false,
+   "added": null
+  },
+  {
+   "id": "しんせんぐみにゃん 五稜郭Ver.",
+   "name": "しんせんぐみにゃん 五稜郭Ver.",
+   "area": "五稜郭タワー限定",
+   "region": "北海道・東北",
+   "lat": 41.8,
+   "lng": 140.75,
+   "approx": false,
+   "added": null
+  },
+  {
+   "id": "りんごにゃん",
+   "name": "りんごにゃん",
+   "area": "青森",
+   "region": "北海道・東北",
+   "lat": 40.82,
+   "lng": 140.74,
+   "approx": false,
+   "added": null
+  },
+  {
+   "id": "わんこそばにゃん",
+   "name": "わんこそばにゃん",
+   "area": "岩手",
+   "region": "北海道・東北",
+   "lat": 39.7,
+   "lng": 141.15,
+   "approx": false,
+   "added": null
+  },
+  {
+   "id": "伊達政宗にゃん",
+   "name": "伊達政宗にゃん",
+   "area": "宮城",
+   "region": "北海道・東北",
+   "lat": 38.27,
+   "lng": 140.87,
+   "approx": false,
+   "added": null
+  },
+  {
+   "id": "ずんだもちにゃん",
+   "name": "ずんだもちにゃん",
+   "area": "宮城",
+   "region": "北海道・東北",
+   "lat": 38.27,
+   "lng": 140.87,
+   "approx": false,
+   "added": null
+  },
+  {
+   "id": "あきたいぬにゃん",
+   "name": "あきたいぬにゃん",
+   "area": "秋田",
+   "region": "北海道・東北",
+   "lat": 39.72,
+   "lng": 140.1,
+   "approx": false,
+   "added": null
+  },
+  {
+   "id": "さくらんぼにゃん",
+   "name": "さくらんぼにゃん",
+   "area": "山形",
+   "region": "北海道・東北",
+   "lat": 38.24,
+   "lng": 140.36,
+   "approx": false,
+   "added": null
+  },
+  {
+   "id": "ふくしまももにゃん",
+   "name": "ふくしまももにゃん",
+   "area": "福島",
+   "region": "北海道・東北",
+   "lat": 37.75,
+   "lng": 140.47,
+   "approx": false,
+   "added": null
+  },
+  {
+   "id": "あかべこにゃん",
+   "name": "あかべこにゃん",
+   "area": "福島",
+   "region": "北海道・東北",
+   "lat": 37.75,
+   "lng": 140.47,
+   "approx": false,
+   "added": null
+  },
+  {
+   "id": "さんりくかきにゃん",
+   "name": "さんりくかきにゃん",
+   "area": "三陸",
+   "region": "北海道・東北",
+   "lat": 39.4,
+   "lng": 141.9,
+   "approx": false,
+   "added": null
+  },
+  {
+   "id": "みとにゃん",
+   "name": "みとにゃん",
+   "area": "茨城",
+   "region": "関東",
+   "lat": 36.34,
+   "lng": 140.45,
+   "approx": false,
+   "added": null
+  },
+  {
+   "id": "こきあにゃん",
+   "name": "こきあにゃん",
+   "area": "茨城",
+   "region": "関東",
+   "lat": 36.34,
+   "lng": 140.45,
+   "approx": false,
+   "added": null
+  },
+  {
+   "id": "ねもふぃらにゃん",
+   "name": "ねもふぃらにゃん",
+   "area": "茨城",
+   "region": "関東",
+   "lat": 36.34,
+   "lng": 140.45,
+   "approx": false,
+   "added": null
+  },
+  {
+   "id": "ふじのはなにゃん",
+   "name": "ふじのはなにゃん",
+   "area": "あしかがフラワーパーク限定",
+   "region": "関東",
+   "lat": 36.31,
+   "lng": 139.52,
+   "approx": false,
+   "added": null
+  },
+  {
+   "id": "あくあわーるどにゃん",
+   "name": "あくあわーるどにゃん",
+   "area": "アクアワールド 大洗水族館限定",
+   "region": "関東",
+   "lat": 36.31,
+   "lng": 140.57,
+   "approx": false,
+   "added": null
+  },
+  {
+   "id": "ぎょうざにゃん",
+   "name": "ぎょうざにゃん",
+   "area": "栃木",
+   "region": "関東",
+   "lat": 36.57,
+   "lng": 139.88,
+   "approx": false,
+   "added": null
+  },
+  {
+   "id": "ねむりねこにゃん",
+   "name": "ねむりねこにゃん",
+   "area": "栃木",
+   "region": "関東",
+   "lat": 36.57,
+   "lng": 139.88,
+   "approx": false,
+   "added": null
+  },
+  {
+   "id": "いちごにゃん",
+   "name": "いちごにゃん",
+   "area": "栃木",
+   "region": "関東",
+   "lat": 36.57,
+   "lng": 139.88,
+   "approx": false,
+   "added": null
+  },
+  {
+   "id": "なすにゃん",
+   "name": "なすにゃん",
+   "area": "那須",
+   "region": "関東",
+   "lat": 37.02,
+   "lng": 140.0,
+   "approx": false,
+   "added": null
+  },
+  {
+   "id": "ひこうきにゃん",
+   "name": "ひこうきにゃん",
+   "area": "東京限定",
+   "region": "関東",
+   "lat": 35.68,
+   "lng": 139.65,
+   "approx": false,
+   "added": null
+  },
+  {
+   "id": "東京タワーにゃん",
+   "name": "東京タワーにゃん",
+   "area": "東京限定",
+   "region": "関東",
+   "lat": 35.66,
+   "lng": 139.75,
+   "approx": false,
+   "added": null
+  },
+  {
+   "id": "東京スカイツリーにゃん",
+   "name": "東京スカイツリーにゃん",
+   "area": "東京限定",
+   "region": "関東",
+   "lat": 35.71,
+   "lng": 139.81,
+   "approx": false,
+   "added": null
+  },
+  {
+   "id": "あじさいにゃん",
+   "name": "あじさいにゃん",
+   "area": "神奈川",
+   "region": "関東",
+   "lat": 35.45,
+   "lng": 139.64,
+   "approx": false,
+   "added": null
+  },
+  {
+   "id": "江ノ電にゃん",
+   "name": "江ノ電にゃん",
+   "area": "神奈川",
+   "region": "関東",
+   "lat": 35.32,
+   "lng": 139.55,
+   "approx": false,
+   "added": null
+  },
+  {
+   "id": "おこめにゃん",
+   "name": "おこめにゃん",
+   "area": "新潟",
+   "region": "中部",
+   "lat": 37.92,
+   "lng": 139.04,
+   "approx": false,
+   "added": null
+  },
+  {
+   "id": "ときにゃん",
+   "name": "ときにゃん",
+   "area": "新潟",
+   "region": "中部",
+   "lat": 37.92,
+   "lng": 139.04,
+   "approx": false,
+   "added": null
+  },
+  {
+   "id": "かきのたねにゃん",
+   "name": "かきのたねにゃん",
+   "area": "新潟",
+   "region": "中部",
+   "lat": 37.92,
+   "lng": 139.04,
+   "approx": false,
+   "added": null
+  },
+  {
+   "id": "ささだんごにゃん",
+   "name": "ささだんごにゃん",
+   "area": "新潟",
+   "region": "中部",
+   "lat": 37.92,
+   "lng": 139.04,
+   "approx": false,
+   "added": null
+  },
+  {
+   "id": "ぴーちにゃん",
+   "name": "ぴーちにゃん",
+   "area": "山梨",
+   "region": "中部",
+   "lat": 35.66,
+   "lng": 138.57,
+   "approx": false,
+   "added": null
+  },
+  {
+   "id": "しんしゅうりんごにゃん",
+   "name": "しんしゅうりんごにゃん",
+   "area": "長野",
+   "region": "中部",
+   "lat": 36.65,
+   "lng": 138.18,
+   "approx": false,
+   "added": null
+  },
+  {
+   "id": "しゃいんますかっとにゃん",
+   "name": "しゃいんますかっとにゃん",
+   "area": "長野・山梨限定",
+   "region": "中部",
+   "lat": 35.9,
+   "lng": 138.4,
+   "approx": false,
+   "added": null
+  },
+  {
+   "id": "おこじょにゃん",
+   "name": "おこじょにゃん",
+   "area": "信州",
+   "region": "中部",
+   "lat": 36.65,
+   "lng": 138.18,
+   "approx": false,
+   "added": null
+  },
+  {
+   "id": "さるぼぼにゃん",
+   "name": "さるぼぼにゃん",
+   "area": "飛騨限定",
+   "region": "中部",
+   "lat": 36.15,
+   "lng": 137.25,
+   "approx": false,
+   "added": null
+  },
+  {
+   "id": "しずおかいちごにゃん",
+   "name": "しずおかいちごにゃん",
+   "area": "静岡",
+   "region": "中部",
+   "lat": 34.98,
+   "lng": 138.38,
+   "approx": false,
+   "added": null
+  },
+  {
+   "id": "しずおかみかんにゃん",
+   "name": "しずおかみかんにゃん",
+   "area": "静岡",
+   "region": "中部",
+   "lat": 34.98,
+   "lng": 138.38,
+   "approx": false,
+   "added": null
+  },
+  {
+   "id": "さかさふじにゃん",
+   "name": "さかさふじにゃん",
+   "area": "富士山付近限定",
+   "region": "中部",
+   "lat": 35.36,
+   "lng": 138.73,
+   "approx": false,
+   "added": null
+  },
+  {
+   "id": "おぐらとーすとにゃん",
+   "name": "おぐらとーすとにゃん",
+   "area": "名古屋",
+   "region": "中部",
+   "lat": 35.18,
+   "lng": 136.91,
+   "approx": false,
+   "added": null
+  },
+  {
+   "id": "しゃちほこにゃん",
+   "name": "しゃちほこにゃん",
+   "area": "名古屋",
+   "region": "中部",
+   "lat": 35.18,
+   "lng": 136.91,
+   "approx": false,
+   "added": null
+  },
+  {
+   "id": "えびふらいにゃん",
+   "name": "えびふらいにゃん",
+   "area": "名古屋",
+   "region": "中部",
+   "lat": 35.18,
+   "lng": 136.91,
+   "approx": false,
+   "added": null
+  },
+  {
+   "id": "いせえびにゃん",
+   "name": "いせえびにゃん",
+   "area": "三重",
+   "region": "近畿",
+   "lat": 34.73,
+   "lng": 136.51,
+   "approx": false,
+   "added": null
+  },
+  {
+   "id": "ぱーるにゃん",
+   "name": "ぱーるにゃん",
+   "area": "三重",
+   "region": "近畿",
+   "lat": 34.73,
+   "lng": 136.51,
+   "approx": false,
+   "added": null
+  },
+  {
+   "id": "びわこにゃん",
+   "name": "びわこにゃん",
+   "area": "滋賀",
+   "region": "近畿",
+   "lat": 35.0,
+   "lng": 135.87,
+   "approx": false,
+   "added": null
+  },
+  {
+   "id": "まっちゃにゃん",
+   "name": "まっちゃにゃん",
+   "area": "京都",
+   "region": "近畿",
+   "lat": 35.01,
+   "lng": 135.77,
+   "approx": false,
+   "added": null
+  },
+  {
+   "id": "やつはしにゃん",
+   "name": "やつはしにゃん",
+   "area": "京都",
+   "region": "近畿",
+   "lat": 35.01,
+   "lng": 135.77,
+   "approx": false,
+   "added": null
+  },
+  {
+   "id": "しんせんぐみにゃん",
+   "name": "しんせんぐみにゃん",
+   "area": "京都",
+   "region": "近畿",
+   "lat": 35.01,
+   "lng": 135.77,
+   "approx": false,
+   "added": null
+  },
+  {
+   "id": "通天閣にゃん",
+   "name": "通天閣にゃん",
+   "area": "大阪",
+   "region": "近畿",
+   "lat": 34.65,
+   "lng": 135.51,
+   "approx": false,
+   "added": null
+  },
+  {
+   "id": "たこにゃん",
+   "name": "たこにゃん",
+   "area": "大阪",
+   "region": "近畿",
+   "lat": 34.69,
+   "lng": 135.5,
+   "approx": false,
+   "added": null
+  },
+  {
+   "id": "たこやきにゃん",
+   "name": "たこやきにゃん",
+   "area": "大阪",
+   "region": "近畿",
+   "lat": 34.69,
+   "lng": 135.5,
+   "approx": false,
+   "added": null
+  },
+  {
+   "id": "みっくすじゅーすにゃん",
+   "name": "みっくすじゅーすにゃん",
+   "area": "大阪",
+   "region": "近畿",
+   "lat": 34.69,
+   "lng": 135.5,
+   "approx": false,
+   "added": null
+  },
+  {
+   "id": "すいへいにゃん",
+   "name": "すいへいにゃん",
+   "area": "神戸",
+   "region": "近畿",
+   "lat": 34.69,
+   "lng": 135.2,
+   "approx": false,
+   "added": null
+  },
+  {
+   "id": "こうべぎゅうにゃん",
+   "name": "こうべぎゅうにゃん",
+   "area": "神戸",
+   "region": "近畿",
+   "lat": 34.69,
+   "lng": 135.2,
+   "approx": false,
+   "added": null
+  },
+  {
+   "id": "しかにゃん",
+   "name": "しかにゃん",
+   "area": "奈良",
+   "region": "近畿",
+   "lat": 34.69,
+   "lng": 135.83,
+   "approx": false,
+   "added": null
+  },
+  {
+   "id": "ひろしまかきにゃん",
+   "name": "ひろしまかきにゃん",
+   "area": "広島",
+   "region": "中国・四国",
+   "lat": 34.4,
+   "lng": 132.46,
+   "approx": false,
+   "added": null
+  },
+  {
+   "id": "ひろしましかにゃん",
+   "name": "ひろしましかにゃん",
+   "area": "広島",
+   "region": "中国・四国",
+   "lat": 34.4,
+   "lng": 132.46,
+   "approx": false,
+   "added": null
+  },
+  {
+   "id": "もみじまんじゅうにゃん",
+   "name": "もみじまんじゅうにゃん",
+   "area": "広島",
+   "region": "中国・四国",
+   "lat": 34.4,
+   "lng": 132.46,
+   "approx": false,
+   "added": null
+  },
+  {
+   "id": "せとうちれもんにゃん",
+   "name": "せとうちれもんにゃん",
+   "area": "瀬戸内",
+   "region": "中国・四国",
+   "lat": 34.35,
+   "lng": 133.3,
+   "approx": false,
+   "added": null
+  },
+  {
+   "id": "ふくにゃん",
+   "name": "ふくにゃん",
+   "area": "山口",
+   "region": "中国・四国",
+   "lat": 34.19,
+   "lng": 131.47,
+   "approx": false,
+   "added": null
+  },
+  {
+   "id": "ゆずにゃん",
+   "name": "ゆずにゃん",
+   "area": "高知",
+   "region": "中国・四国",
+   "lat": 33.56,
+   "lng": 133.53,
+   "approx": false,
+   "added": null
+  },
+  {
+   "id": "うどんにゃん",
+   "name": "うどんにゃん",
+   "area": "香川",
+   "region": "中国・四国",
+   "lat": 34.34,
+   "lng": 134.04,
+   "approx": false,
+   "added": null
+  },
+  {
+   "id": "だざいふうめにゃん",
+   "name": "だざいふうめにゃん",
+   "area": "福岡",
+   "region": "九州・沖縄",
+   "lat": 33.52,
+   "lng": 130.52,
+   "approx": false,
+   "added": null
+  },
+  {
+   "id": "らーめんにゃん",
+   "name": "らーめんにゃん",
+   "area": "福岡",
+   "region": "九州・沖縄",
+   "lat": 33.59,
+   "lng": 130.4,
+   "approx": false,
+   "added": null
+  },
+  {
+   "id": "あまおうにゃん",
+   "name": "あまおうにゃん",
+   "area": "福岡",
+   "region": "九州・沖縄",
+   "lat": 33.59,
+   "lng": 130.4,
+   "approx": false,
+   "added": null
+  },
+  {
+   "id": "ばななうりにゃん",
+   "name": "ばななうりにゃん",
+   "area": "北九州",
+   "region": "九州・沖縄",
+   "lat": 33.88,
+   "lng": 130.88,
+   "approx": false,
+   "added": null
+  },
+  {
+   "id": "むつごろうにゃん",
+   "name": "むつごろうにゃん",
+   "area": "佐賀",
+   "region": "九州・沖縄",
+   "lat": 33.25,
+   "lng": 130.3,
+   "approx": false,
+   "added": null
+  },
+  {
+   "id": "いかにゃん",
+   "name": "いかにゃん",
+   "area": "佐賀",
+   "region": "九州・沖縄",
+   "lat": 33.25,
+   "lng": 130.3,
+   "approx": false,
+   "added": null
+  },
+  {
+   "id": "ちゃんぽんにゃん",
+   "name": "ちゃんぽんにゃん",
+   "area": "長崎",
+   "region": "九州・沖縄",
+   "lat": 32.75,
+   "lng": 129.88,
+   "approx": false,
+   "added": null
+  },
+  {
+   "id": "かすてらにゃん",
+   "name": "かすてらにゃん",
+   "area": "長崎",
+   "region": "九州・沖縄",
+   "lat": 32.75,
+   "lng": 129.88,
+   "approx": false,
+   "added": null
+  },
+  {
+   "id": "させぼにゃん",
+   "name": "させぼにゃん",
+   "area": "長崎",
+   "region": "九州・沖縄",
+   "lat": 32.75,
+   "lng": 129.88,
+   "approx": false,
+   "added": null
+  },
+  {
+   "id": "あそにゃん",
+   "name": "あそにゃん",
+   "area": "熊本",
+   "region": "九州・沖縄",
+   "lat": 32.79,
+   "lng": 130.74,
+   "approx": false,
+   "added": null
+  },
+  {
+   "id": "すいかにゃん",
+   "name": "すいかにゃん",
+   "area": "熊本",
+   "region": "九州・沖縄",
+   "lat": 32.79,
+   "lng": 130.74,
+   "approx": false,
+   "added": null
+  },
+  {
+   "id": "でこぽんにゃん",
+   "name": "でこぽんにゃん",
+   "area": "熊本",
+   "region": "九州・沖縄",
+   "lat": 32.79,
+   "lng": 130.74,
+   "approx": false,
+   "added": null
+  },
+  {
+   "id": "かぼすにゃん",
+   "name": "かぼすにゃん",
+   "area": "大分",
+   "region": "九州・沖縄",
+   "lat": 33.24,
+   "lng": 131.61,
+   "approx": false,
+   "added": null
+  },
+  {
+   "id": "あかおににゃん",
+   "name": "あかおににゃん",
+   "area": "別府限定",
+   "region": "九州・沖縄",
+   "lat": 33.28,
+   "lng": 131.49,
+   "approx": false,
+   "added": null
+  },
+  {
+   "id": "あおおににゃん",
+   "name": "あおおににゃん",
+   "area": "別府限定",
+   "region": "九州・沖縄",
+   "lat": 33.28,
+   "lng": 131.49,
+   "approx": false,
+   "added": null
+  },
+  {
+   "id": "ひゅうがなつにゃん",
+   "name": "ひゅうがなつにゃん",
+   "area": "宮崎",
+   "region": "九州・沖縄",
+   "lat": 31.91,
+   "lng": 131.42,
+   "approx": false,
+   "added": null
+  },
+  {
+   "id": "まんごーにゃん",
+   "name": "まんごーにゃん",
+   "area": "宮崎",
+   "region": "九州・沖縄",
+   "lat": 31.91,
+   "lng": 131.42,
+   "approx": false,
+   "added": null
+  },
+  {
+   "id": "じとっこにゃん",
+   "name": "じとっこにゃん",
+   "area": "宮崎",
+   "region": "九州・沖縄",
+   "lat": 31.91,
+   "lng": 131.42,
+   "approx": false,
+   "added": null
+  },
+  {
+   "id": "はにわにゃん",
+   "name": "はにわにゃん",
+   "area": "宮崎",
+   "region": "九州・沖縄",
+   "lat": 31.91,
+   "lng": 131.42,
+   "approx": false,
+   "added": null
+  },
+  {
+   "id": "くろぶたにゃん",
+   "name": "くろぶたにゃん",
+   "area": "鹿児島",
+   "region": "九州・沖縄",
+   "lat": 31.6,
+   "lng": 130.56,
+   "approx": false,
+   "added": null
+  },
+  {
+   "id": "しろくまにゃん",
+   "name": "しろくまにゃん",
+   "area": "鹿児島",
+   "region": "九州・沖縄",
+   "lat": 31.6,
+   "lng": 130.56,
+   "approx": false,
+   "added": null
+  },
+  {
+   "id": "いりおもてやまねこにゃん",
+   "name": "いりおもてやまねこにゃん",
+   "area": "八重山 石垣島限定",
+   "region": "九州・沖縄",
+   "lat": 24.34,
+   "lng": 124.16,
+   "approx": false,
+   "added": null
+  },
+  {
+   "id": "おきなわしーさーにゃん あか",
+   "name": "おきなわしーさーにゃん あか",
+   "area": "沖縄",
+   "region": "九州・沖縄",
+   "lat": 26.21,
+   "lng": 127.68,
+   "approx": false,
+   "added": null
+  },
+  {
+   "id": "おきなわしーさーにゃん あお",
+   "name": "おきなわしーさーにゃん あお",
+   "area": "沖縄",
+   "region": "九州・沖縄",
+   "lat": 26.21,
+   "lng": 127.68,
+   "approx": false,
+   "added": null
+  },
+  {
+   "id": "おきなわじんべえにゃん",
+   "name": "おきなわじんべえにゃん",
+   "area": "沖縄",
+   "region": "九州・沖縄",
+   "lat": 26.21,
+   "lng": 127.68,
+   "approx": false,
+   "added": null
+  },
+  {
+   "id": "桔梗信玄餅にゃん",
+   "name": "桔梗信玄餅にゃん",
+   "area": "桔梗屋限定",
+   "region": "地域限定",
+   "lat": 35.66,
+   "lng": 138.57,
+   "approx": false,
+   "added": null
+  },
+  {
+   "id": "のぶながにゃん",
+   "name": "のぶながにゃん",
+   "area": "東海限定",
+   "region": "地域限定",
+   "lat": 35.18,
+   "lng": 136.91,
+   "approx": false,
+   "added": null
+  },
+  {
+   "id": "さつまいもにゃん",
+   "name": "さつまいもにゃん",
+   "area": "地域限定",
+   "region": "地域限定",
+   "lat": 35.5,
+   "lng": 138.7,
+   "approx": false,
+   "added": null
+  },
+  {
+   "id": "おんせんにゃん",
+   "name": "おんせんにゃん",
+   "area": "温泉地限定",
+   "region": "地域限定",
+   "lat": 36.0,
+   "lng": 138.0,
+   "approx": false,
+   "added": null
+  },
+  {
+   "id": "ふじにゃん",
+   "name": "ふじにゃん",
+   "area": "東京・山梨・静岡限定",
+   "region": "地域限定",
+   "lat": 35.5,
+   "lng": 138.7,
+   "approx": false,
+   "added": null
+  },
+  {
+   "id": "べにふじにゃん",
+   "name": "べにふじにゃん",
+   "area": "東京・山梨・静岡限定",
+   "region": "地域限定",
+   "lat": 35.5,
+   "lng": 138.7,
+   "approx": false,
+   "added": null
+  }
+ ]
+}

@@ -1,0 +1,485 @@
+<!doctype html>
+<html lang="ja"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ご当地！ころころにゃんこ コレクションMAP（非公式）</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css">
+<style>
+body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Noto Sans JP",sans-serif;background:#fafafa;color:#222}
+header{padding:14px 16px;background:#fff;box-shadow:0 1px 5px #bbb;position:relative;z-index:1000}
+h1{font-size:20px;margin:0 0 5px}
+.sub{font-size:12px;color:#666;line-height:1.7}
+.sub a,.note a{color:#2a6fdb}
+#controls,#filters{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;align-items:center}
+button,input,select,textarea{font:inherit;border:1px solid #ccc;border-radius:8px;padding:8px 10px;background:#fff;color:inherit}
+button{cursor:pointer}
+button.active{background:#222;color:#fff;border-color:#222}
+#search{flex:1;min-width:180px}
+label.btn{border:1px solid #ccc;border-radius:8px;padding:8px 10px;background:#fff;cursor:pointer}
+#stats{margin-top:10px;font-weight:700}
+#bar{height:8px;background:#eee;border-radius:4px;margin-top:6px;overflow:hidden}
+#bar>i{display:block;height:100%;width:0;background:#4caf7d;transition:width .3s}
+#map{height:62vh;min-height:480px}
+.mapfail{padding:24px;color:#a00}
+#list{padding:8px 14px 14px;max-width:1000px;margin:auto}
+h2.rg{font-size:15px;margin:18px 0 8px;padding-left:8px;border-left:4px solid #999}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:8px}
+.item{display:flex;align-items:center;gap:10px;padding:8px;background:#fff;border:1px solid #eee;border-radius:10px;cursor:pointer}
+.item.owned{border-color:#bfe3cd;background:#f6fcf8}
+.ico,.map-cat,.popimg{border-radius:50%;overflow:hidden;background:#fff}
+.ico{width:52px;height:52px;flex:none;border:2px solid #fff;box-shadow:0 1px 4px #999;box-sizing:border-box}
+.ico svg,.ico img,.map-cat svg,.map-cat img,.popimg svg,.popimg img{width:100%;height:100%;object-fit:cover;display:block}
+.ico:not(.owned)>*,.map-cat:not(.owned)>*,.popimg:not(.owned)>*{filter:grayscale(1);opacity:.42}
+.nm{flex:1;min-width:0;font-size:14px}
+.area{font-size:11px;color:#777;margin-top:2px;word-break:break-all}
+.st{font-size:11px;color:#777}
+.item.owned .st{color:#2f9a63;font-weight:700}
+.new{display:inline-block;margin-left:6px;padding:1px 6px;border-radius:8px;background:#ff5a5f;color:#fff;font-size:10px;vertical-align:middle}
+.acts{display:flex;flex-direction:column;gap:4px}
+.mini{padding:3px 8px;font-size:11px;border-radius:6px}
+.map-cat{border:2px solid #fff;box-shadow:0 1px 5px #666}
+.cl{width:46px;height:46px;border-radius:50%;background:#fff;border:3px solid #999;box-sizing:border-box;display:flex;align-items:center;justify-content:center;font-size:12px;box-shadow:0 1px 5px #666}
+.cl.part{border-color:#f0a020}.cl.full{border-color:#3aa76d;background:#eaf8f0}
+.leaflet-popup-content{margin:10px 12px;text-align:center}
+.pop{min-width:150px}
+.popimg{width:110px;height:110px;margin:0 auto 6px;border:2px solid #fff;box-shadow:0 1px 5px #999;box-sizing:border-box}
+.pa{font-size:12px;color:#777}
+.pbtns{margin-top:8px;display:flex;gap:6px;justify-content:center;flex-wrap:wrap}
+.popup-btn{padding:7px 10px;border:0;border-radius:7px;background:#222;color:#fff}
+.popup-btn.sec{background:#eee;color:#222}
+.legend{background:#fff;padding:8px 10px;border-radius:8px;box-shadow:0 1px 5px #999;font-size:12px}
+.note{font-size:11px;color:#777;padding:0 14px 24px;max-width:1000px;margin:auto;line-height:1.8}
+dialog{border:0;border-radius:14px;padding:16px;max-width:420px;width:calc(100% - 32px);box-shadow:0 8px 40px #0006;box-sizing:border-box}
+dialog::backdrop{background:#0006}
+dialog h3{margin:0 0 2px;font-size:17px}
+dialog .row{margin-top:10px;display:flex;flex-direction:column;gap:4px;font-size:13px}
+dialog input[type=text],dialog input[type=url],dialog input[type=date],dialog textarea{width:100%;box-sizing:border-box}
+#cropWrap{position:relative;width:240px;height:240px;margin:8px auto 0;border-radius:12px;overflow:hidden;background:#eee}
+#cv{width:240px;height:240px;display:block;touch-action:none;cursor:grab}
+#guide{position:absolute;inset:0;border-radius:50%;pointer-events:none;box-shadow:0 0 0 400px rgba(255,255,255,.62);
+ background:linear-gradient(#f0507088,#f0507088) center/1px 100% no-repeat,linear-gradient(#f0507088,#f0507088) center/100% 1px no-repeat}
+.hint{font-size:11px;color:#777;text-align:center;margin-top:4px}
+.drow{display:flex;gap:8px;justify-content:flex-end;margin-top:14px}
+.drow .primary{background:#222;color:#fff;border-color:#222}
+.drow button{white-space:nowrap}
+.chip{display:inline-block;margin-left:8px;padding:2px 8px;border-radius:10px;background:#e8eefc;font-size:11px;cursor:pointer;vertical-align:middle}
+.chip.err{background:#fde3e3;color:#a00}
+[hidden]{display:none!important}
+#roBanner{background:#fff6d6;color:#7a5b00;font-size:13px;padding:8px 16px;text-align:center}
+body.ro .mini[data-a=edit],body.ro #btnAllOn,body.ro #btnAllOff,body.ro .importLbl,body.ro .pbtns{display:none}
+.linkrow{display:flex;gap:6px;margin-top:4px}.linkrow input{flex:1;min-width:0}
+</style></head>
+<body>
+<header>
+<h1>🐱 ご当地！ころころにゃんこ コレクションMAP<span style="font-size:12px;font-weight:400;color:#888">（非公式）</span></h1>
+<div class="sub">
+<a href="https://yell-world.jp/gotouchi-korokoronyanko/" target="_blank" rel="noopener">公式ページ</a>に載っている名前と地域をもとにした、個人用のコレクション記録です。公式の画像は使っていません。写真は自分で撮ったものを登録できます。<br>
+<span id="meta"></span><span id="syncChip" class="chip" hidden></span>
+</div>
+<div id="controls"><input id="search" placeholder="にゃんこ名・地域・購入場所で検索">
+<button id="btnClear">検索クリア</button>
+<button id="btnAllOn">すべて所有にする</button><button id="btnAllOff">すべて未所有に戻す</button>
+<button id="btnExport">記録を書き出す</button><button id="btnSync">☁ 共有・同期</button><label class="btn importLbl">記録を読み込む<input id="importFile" type="file" accept="application/json,.json" hidden></label></div>
+<div id="filters">
+<button data-f="all" class="active">すべて</button><button data-f="owned">持ってる</button><button data-f="todo">まだ</button><button data-f="new">NEW</button>
+<select id="region"><option value="">全地方</option></select>
+</div>
+<div id="stats"></div><div id="bar"><i></i></div>
+</header>
+<div id="roBanner" hidden>👀 閲覧専用モードです（記録・写真は変更できません）</div>
+<div id="map"></div><div id="list"></div>
+<div class="note">
+※記録や写真は、まずこの端末のブラウザに保存されます。別のブラウザ・スマホ・家族とも見られるようにするには「☁ 共有・同期」を設定してください（設定するまで、外部には送信しません）。ときどき「記録を書き出す」（写真も一緒に書き出されます）でバックアップもできます。<br>
+※地図の位置は地域・施設の目安です。同じ地域のにゃんこは重ならないよう円形に並べています。<br>
+※このサイトは個人が作った非公式のファンサイトで、株式会社エールとは関係ありません。「ご当地！ころころにゃんこ」の名称・キャラクターの権利は株式会社エールに帰属します（© YELL CO.,LTD.）。詳しくは公式の<a href="https://yell-world.jp/guidelines/" target="_blank" rel="noopener">二次創作のガイドライン</a>をご確認ください。
+</div>
+
+<dialog id="dlg">
+<h3 id="dTitle"></h3><div class="area" id="dArea"></div>
+<div class="row"><label><input type="checkbox" id="dOwned"> 持っている</label></div>
+<div class="row"><b>写真（自分で撮ったもの）</b>
+<div id="cropWrap"><canvas id="cv" width="240" height="240"></canvas><div id="guide"></div></div>
+<div class="hint">ドラッグで位置、下のバーで拡大。顔が赤い十字の真ん中に来るように合わせてください。</div>
+<input type="range" id="zoom" min="1" max="4" step="0.01" value="1">
+<div style="display:flex;gap:8px"><label class="btn" style="flex:1;text-align:center">写真を選ぶ<input id="file" type="file" accept="image/*" hidden></label><button type="button" id="rmPhoto">写真を削除</button></div>
+</div>
+<div class="row"><label for="dPlace">購入した場所</label><input type="text" id="dPlace" maxlength="100" placeholder="例：東京駅 お土産店"></div>
+<div class="row"><label for="dDate">購入日</label><input type="date" id="dDate"></div>
+<div class="row"><label for="dUrl">ブログ記事のURL（あとで）</label><input type="url" id="dUrl" maxlength="300" placeholder="https://"></div>
+<div class="row"><label for="dNote">メモ</label><textarea id="dNote" rows="3" maxlength="500"></textarea></div>
+<div class="drow"><button type="button" id="dCancel">キャンセル</button><button type="button" id="dSave" class="primary">保存</button></div>
+</dialog>
+
+<dialog id="syncDlg">
+<h3>☁ 共有・同期</h3>
+<div class="row" id="siteRow" hidden>公開したサイトのURL<input type="url" id="siteBase" placeholder="https://ユーザー名.github.io/korokoro-map/"><div class="hint" style="text-align:left">いまはパソコン内のファイルとして開いています。GitHub Pages などに公開したURLを入れると、家族に送れるリンクが作られます。</div></div>
+<div id="syncOff">
+<div class="row">スマホや家族と、記録と写真を共有できます。無料の Firebase でデータベースを1つ用意し、そのURLを下に入れてください（手順は README にあります）。「共有を作る」を押すと、いまの記録と写真がアップロードされます。</div>
+<div class="row"><label for="syncDb">データベースのURL</label><input type="url" id="syncDb" placeholder="https://xxxx-default-rtdb.asia-southeast1.firebasedatabase.app"></div>
+<div class="drow"><button type="button" data-close="syncDlg">閉じる</button><button type="button" id="syncCreate" class="primary">共有を作る</button></div>
+<div class="hint" style="text-align:left">共有リンクをもらっている場合は、そのリンクを開くだけでつながります。</div>
+</div>
+<div id="syncOn">
+<div class="row" id="syncStatus"></div>
+<div class="row" id="rowEdit">編集もできるリンク（自分・家族用）<div class="linkrow"><input id="linkEdit" readonly><button type="button" data-copy="linkEdit">コピー</button><button type="button" data-share="linkEdit" class="shareBtn" hidden>共有</button></div></div>
+<div class="row">閲覧専用リンク<div class="linkrow"><input id="linkView" readonly><button type="button" data-copy="linkView">コピー</button><button type="button" data-share="linkView" class="shareBtn" hidden>共有</button></div></div>
+<div class="hint" style="text-align:left">リンクを知っている人は、誰でも記録や写真を見られます（編集リンクなら変更もできます）。家族以外には送らないでください。「閲覧専用」は、うっかり編集を防ぐためのものです。</div>
+<div class="drow"><button type="button" id="syncStop">共有をやめる</button><button type="button" id="syncNowBtn">今すぐ同期</button><button type="button" data-close="syncDlg" class="primary">閉じる</button></div>
+</div>
+</dialog>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
+<script>
+/* 公式ページから取り込んだ「名前・地域・位置」だけのデータ（update_cats.py が cats.json と一緒に更新します） */
+/*CATS_START*/const EMBEDDED={"version":1,"updated":"2026-09-19","source":"https://yell-world.jp/gotouchi-korokoronyanko/","cats":[{"id":"かににゃん","name":"かににゃん","area":"北海道","region":"北海道・東北","lat":43.06,"lng":141.35,"approx":false,"added":null},{"id":"しゃけにゃん","name":"しゃけにゃん","area":"北海道","region":"北海道・東北","lat":43.06,"lng":141.35,"approx":false,"added":null},{"id":"めろんにゃん","name":"めろんにゃん","area":"北海道","region":"北海道・東北","lat":43.06,"lng":141.35,"approx":false,"added":null},{"id":"とうきびにゃん","name":"とうきびにゃん","area":"北海道","region":"北海道・東北","lat":43.06,"lng":141.35,"approx":false,"added":null},{"id":"しんせんぐみにゃん 五稜郭Ver.","name":"しんせんぐみにゃん 五稜郭Ver.","area":"五稜郭タワー限定","region":"北海道・東北","lat":41.8,"lng":140.75,"approx":false,"added":null},{"id":"りんごにゃん","name":"りんごにゃん","area":"青森","region":"北海道・東北","lat":40.82,"lng":140.74,"approx":false,"added":null},{"id":"わんこそばにゃん","name":"わんこそばにゃん","area":"岩手","region":"北海道・東北","lat":39.7,"lng":141.15,"approx":false,"added":null},{"id":"伊達政宗にゃん","name":"伊達政宗にゃん","area":"宮城","region":"北海道・東北","lat":38.27,"lng":140.87,"approx":false,"added":null},{"id":"ずんだもちにゃん","name":"ずんだもちにゃん","area":"宮城","region":"北海道・東北","lat":38.27,"lng":140.87,"approx":false,"added":null},{"id":"あきたいぬにゃん","name":"あきたいぬにゃん","area":"秋田","region":"北海道・東北","lat":39.72,"lng":140.1,"approx":false,"added":null},{"id":"さくらんぼにゃん","name":"さくらんぼにゃん","area":"山形","region":"北海道・東北","lat":38.24,"lng":140.36,"approx":false,"added":null},{"id":"ふくしまももにゃん","name":"ふくしまももにゃん","area":"福島","region":"北海道・東北","lat":37.75,"lng":140.47,"approx":false,"added":null},{"id":"あかべこにゃん","name":"あかべこにゃん","area":"福島","region":"北海道・東北","lat":37.75,"lng":140.47,"approx":false,"added":null},{"id":"さんりくかきにゃん","name":"さんりくかきにゃん","area":"三陸","region":"北海道・東北","lat":39.4,"lng":141.9,"approx":false,"added":null},{"id":"みとにゃん","name":"みとにゃん","area":"茨城","region":"関東","lat":36.34,"lng":140.45,"approx":false,"added":null},{"id":"こきあにゃん","name":"こきあにゃん","area":"茨城","region":"関東","lat":36.34,"lng":140.45,"approx":false,"added":null},{"id":"ねもふぃらにゃん","name":"ねもふぃらにゃん","area":"茨城","region":"関東","lat":36.34,"lng":140.45,"approx":false,"added":null},{"id":"ふじのはなにゃん","name":"ふじのはなにゃん","area":"あしかがフラワーパーク限定","region":"関東","lat":36.31,"lng":139.52,"approx":false,"added":null},{"id":"あくあわーるどにゃん","name":"あくあわーるどにゃん","area":"アクアワールド 大洗水族館限定","region":"関東","lat":36.31,"lng":140.57,"approx":false,"added":null},{"id":"ぎょうざにゃん","name":"ぎょうざにゃん","area":"栃木","region":"関東","lat":36.57,"lng":139.88,"approx":false,"added":null},{"id":"ねむりねこにゃん","name":"ねむりねこにゃん","area":"栃木","region":"関東","lat":36.57,"lng":139.88,"approx":false,"added":null},{"id":"いちごにゃん","name":"いちごにゃん","area":"栃木","region":"関東","lat":36.57,"lng":139.88,"approx":false,"added":null},{"id":"なすにゃん","name":"なすにゃん","area":"那須","region":"関東","lat":37.02,"lng":140.0,"approx":false,"added":null},{"id":"ひこうきにゃん","name":"ひこうきにゃん","area":"東京限定","region":"関東","lat":35.68,"lng":139.65,"approx":false,"added":null},{"id":"東京タワーにゃん","name":"東京タワーにゃん","area":"東京限定","region":"関東","lat":35.66,"lng":139.75,"approx":false,"added":null},{"id":"東京スカイツリーにゃん","name":"東京スカイツリーにゃん","area":"東京限定","region":"関東","lat":35.71,"lng":139.81,"approx":false,"added":null},{"id":"あじさいにゃん","name":"あじさいにゃん","area":"神奈川","region":"関東","lat":35.45,"lng":139.64,"approx":false,"added":null},{"id":"江ノ電にゃん","name":"江ノ電にゃん","area":"神奈川","region":"関東","lat":35.32,"lng":139.55,"approx":false,"added":null},{"id":"おこめにゃん","name":"おこめにゃん","area":"新潟","region":"中部","lat":37.92,"lng":139.04,"approx":false,"added":null},{"id":"ときにゃん","name":"ときにゃん","area":"新潟","region":"中部","lat":37.92,"lng":139.04,"approx":false,"added":null},{"id":"かきのたねにゃん","name":"かきのたねにゃん","area":"新潟","region":"中部","lat":37.92,"lng":139.04,"approx":false,"added":null},{"id":"ささだんごにゃん","name":"ささだんごにゃん","area":"新潟","region":"中部","lat":37.92,"lng":139.04,"approx":false,"added":null},{"id":"ぴーちにゃん","name":"ぴーちにゃん","area":"山梨","region":"中部","lat":35.66,"lng":138.57,"approx":false,"added":null},{"id":"しんしゅうりんごにゃん","name":"しんしゅうりんごにゃん","area":"長野","region":"中部","lat":36.65,"lng":138.18,"approx":false,"added":null},{"id":"しゃいんますかっとにゃん","name":"しゃいんますかっとにゃん","area":"長野・山梨限定","region":"中部","lat":35.9,"lng":138.4,"approx":false,"added":null},{"id":"おこじょにゃん","name":"おこじょにゃん","area":"信州","region":"中部","lat":36.65,"lng":138.18,"approx":false,"added":null},{"id":"さるぼぼにゃん","name":"さるぼぼにゃん","area":"飛騨限定","region":"中部","lat":36.15,"lng":137.25,"approx":false,"added":null},{"id":"しずおかいちごにゃん","name":"しずおかいちごにゃん","area":"静岡","region":"中部","lat":34.98,"lng":138.38,"approx":false,"added":null},{"id":"しずおかみかんにゃん","name":"しずおかみかんにゃん","area":"静岡","region":"中部","lat":34.98,"lng":138.38,"approx":false,"added":null},{"id":"さかさふじにゃん","name":"さかさふじにゃん","area":"富士山付近限定","region":"中部","lat":35.36,"lng":138.73,"approx":false,"added":null},{"id":"おぐらとーすとにゃん","name":"おぐらとーすとにゃん","area":"名古屋","region":"中部","lat":35.18,"lng":136.91,"approx":false,"added":null},{"id":"しゃちほこにゃん","name":"しゃちほこにゃん","area":"名古屋","region":"中部","lat":35.18,"lng":136.91,"approx":false,"added":null},{"id":"えびふらいにゃん","name":"えびふらいにゃん","area":"名古屋","region":"中部","lat":35.18,"lng":136.91,"approx":false,"added":null},{"id":"いせえびにゃん","name":"いせえびにゃん","area":"三重","region":"近畿","lat":34.73,"lng":136.51,"approx":false,"added":null},{"id":"ぱーるにゃん","name":"ぱーるにゃん","area":"三重","region":"近畿","lat":34.73,"lng":136.51,"approx":false,"added":null},{"id":"びわこにゃん","name":"びわこにゃん","area":"滋賀","region":"近畿","lat":35.0,"lng":135.87,"approx":false,"added":null},{"id":"まっちゃにゃん","name":"まっちゃにゃん","area":"京都","region":"近畿","lat":35.01,"lng":135.77,"approx":false,"added":null},{"id":"やつはしにゃん","name":"やつはしにゃん","area":"京都","region":"近畿","lat":35.01,"lng":135.77,"approx":false,"added":null},{"id":"しんせんぐみにゃん","name":"しんせんぐみにゃん","area":"京都","region":"近畿","lat":35.01,"lng":135.77,"approx":false,"added":null},{"id":"通天閣にゃん","name":"通天閣にゃん","area":"大阪","region":"近畿","lat":34.65,"lng":135.51,"approx":false,"added":null},{"id":"たこにゃん","name":"たこにゃん","area":"大阪","region":"近畿","lat":34.69,"lng":135.5,"approx":false,"added":null},{"id":"たこやきにゃん","name":"たこやきにゃん","area":"大阪","region":"近畿","lat":34.69,"lng":135.5,"approx":false,"added":null},{"id":"みっくすじゅーすにゃん","name":"みっくすじゅーすにゃん","area":"大阪","region":"近畿","lat":34.69,"lng":135.5,"approx":false,"added":null},{"id":"すいへいにゃん","name":"すいへいにゃん","area":"神戸","region":"近畿","lat":34.69,"lng":135.2,"approx":false,"added":null},{"id":"こうべぎゅうにゃん","name":"こうべぎゅうにゃん","area":"神戸","region":"近畿","lat":34.69,"lng":135.2,"approx":false,"added":null},{"id":"しかにゃん","name":"しかにゃん","area":"奈良","region":"近畿","lat":34.69,"lng":135.83,"approx":false,"added":null},{"id":"ひろしまかきにゃん","name":"ひろしまかきにゃん","area":"広島","region":"中国・四国","lat":34.4,"lng":132.46,"approx":false,"added":null},{"id":"ひろしましかにゃん","name":"ひろしましかにゃん","area":"広島","region":"中国・四国","lat":34.4,"lng":132.46,"approx":false,"added":null},{"id":"もみじまんじゅうにゃん","name":"もみじまんじゅうにゃん","area":"広島","region":"中国・四国","lat":34.4,"lng":132.46,"approx":false,"added":null},{"id":"せとうちれもんにゃん","name":"せとうちれもんにゃん","area":"瀬戸内","region":"中国・四国","lat":34.35,"lng":133.3,"approx":false,"added":null},{"id":"ふくにゃん","name":"ふくにゃん","area":"山口","region":"中国・四国","lat":34.19,"lng":131.47,"approx":false,"added":null},{"id":"ゆずにゃん","name":"ゆずにゃん","area":"高知","region":"中国・四国","lat":33.56,"lng":133.53,"approx":false,"added":null},{"id":"うどんにゃん","name":"うどんにゃん","area":"香川","region":"中国・四国","lat":34.34,"lng":134.04,"approx":false,"added":null},{"id":"だざいふうめにゃん","name":"だざいふうめにゃん","area":"福岡","region":"九州・沖縄","lat":33.52,"lng":130.52,"approx":false,"added":null},{"id":"らーめんにゃん","name":"らーめんにゃん","area":"福岡","region":"九州・沖縄","lat":33.59,"lng":130.4,"approx":false,"added":null},{"id":"あまおうにゃん","name":"あまおうにゃん","area":"福岡","region":"九州・沖縄","lat":33.59,"lng":130.4,"approx":false,"added":null},{"id":"ばななうりにゃん","name":"ばななうりにゃん","area":"北九州","region":"九州・沖縄","lat":33.88,"lng":130.88,"approx":false,"added":null},{"id":"むつごろうにゃん","name":"むつごろうにゃん","area":"佐賀","region":"九州・沖縄","lat":33.25,"lng":130.3,"approx":false,"added":null},{"id":"いかにゃん","name":"いかにゃん","area":"佐賀","region":"九州・沖縄","lat":33.25,"lng":130.3,"approx":false,"added":null},{"id":"ちゃんぽんにゃん","name":"ちゃんぽんにゃん","area":"長崎","region":"九州・沖縄","lat":32.75,"lng":129.88,"approx":false,"added":null},{"id":"かすてらにゃん","name":"かすてらにゃん","area":"長崎","region":"九州・沖縄","lat":32.75,"lng":129.88,"approx":false,"added":null},{"id":"させぼにゃん","name":"させぼにゃん","area":"長崎","region":"九州・沖縄","lat":32.75,"lng":129.88,"approx":false,"added":null},{"id":"あそにゃん","name":"あそにゃん","area":"熊本","region":"九州・沖縄","lat":32.79,"lng":130.74,"approx":false,"added":null},{"id":"すいかにゃん","name":"すいかにゃん","area":"熊本","region":"九州・沖縄","lat":32.79,"lng":130.74,"approx":false,"added":null},{"id":"でこぽんにゃん","name":"でこぽんにゃん","area":"熊本","region":"九州・沖縄","lat":32.79,"lng":130.74,"approx":false,"added":null},{"id":"かぼすにゃん","name":"かぼすにゃん","area":"大分","region":"九州・沖縄","lat":33.24,"lng":131.61,"approx":false,"added":null},{"id":"あかおににゃん","name":"あかおににゃん","area":"別府限定","region":"九州・沖縄","lat":33.28,"lng":131.49,"approx":false,"added":null},{"id":"あおおににゃん","name":"あおおににゃん","area":"別府限定","region":"九州・沖縄","lat":33.28,"lng":131.49,"approx":false,"added":null},{"id":"ひゅうがなつにゃん","name":"ひゅうがなつにゃん","area":"宮崎","region":"九州・沖縄","lat":31.91,"lng":131.42,"approx":false,"added":null},{"id":"まんごーにゃん","name":"まんごーにゃん","area":"宮崎","region":"九州・沖縄","lat":31.91,"lng":131.42,"approx":false,"added":null},{"id":"じとっこにゃん","name":"じとっこにゃん","area":"宮崎","region":"九州・沖縄","lat":31.91,"lng":131.42,"approx":false,"added":null},{"id":"はにわにゃん","name":"はにわにゃん","area":"宮崎","region":"九州・沖縄","lat":31.91,"lng":131.42,"approx":false,"added":null},{"id":"くろぶたにゃん","name":"くろぶたにゃん","area":"鹿児島","region":"九州・沖縄","lat":31.6,"lng":130.56,"approx":false,"added":null},{"id":"しろくまにゃん","name":"しろくまにゃん","area":"鹿児島","region":"九州・沖縄","lat":31.6,"lng":130.56,"approx":false,"added":null},{"id":"いりおもてやまねこにゃん","name":"いりおもてやまねこにゃん","area":"八重山 石垣島限定","region":"九州・沖縄","lat":24.34,"lng":124.16,"approx":false,"added":null},{"id":"おきなわしーさーにゃん あか","name":"おきなわしーさーにゃん あか","area":"沖縄","region":"九州・沖縄","lat":26.21,"lng":127.68,"approx":false,"added":null},{"id":"おきなわしーさーにゃん あお","name":"おきなわしーさーにゃん あお","area":"沖縄","region":"九州・沖縄","lat":26.21,"lng":127.68,"approx":false,"added":null},{"id":"おきなわじんべえにゃん","name":"おきなわじんべえにゃん","area":"沖縄","region":"九州・沖縄","lat":26.21,"lng":127.68,"approx":false,"added":null},{"id":"桔梗信玄餅にゃん","name":"桔梗信玄餅にゃん","area":"桔梗屋限定","region":"地域限定","lat":35.66,"lng":138.57,"approx":false,"added":null},{"id":"のぶながにゃん","name":"のぶながにゃん","area":"東海限定","region":"地域限定","lat":35.18,"lng":136.91,"approx":false,"added":null},{"id":"さつまいもにゃん","name":"さつまいもにゃん","area":"地域限定","region":"地域限定","lat":35.5,"lng":138.7,"approx":false,"added":null},{"id":"おんせんにゃん","name":"おんせんにゃん","area":"温泉地限定","region":"地域限定","lat":36.0,"lng":138.0,"approx":false,"added":null},{"id":"ふじにゃん","name":"ふじにゃん","area":"東京・山梨・静岡限定","region":"地域限定","lat":35.5,"lng":138.7,"approx":false,"added":null},{"id":"べにふじにゃん","name":"べにふじにゃん","area":"東京・山梨・静岡限定","region":"地域限定","lat":35.5,"lng":138.7,"approx":false,"added":null}]};/*CATS_END*/
+
+/* ---------- 保存 ---------- */
+const OLD_KEY="korokoro_nyanko_owned_v2",SYNC_KEY="korokoro_sync_v1";
+/* 旧バージョン（番号で保存）の記録を引き継ぐための対応表 */
+const LEGACY=["桔梗信玄餅にゃん","のぶながにゃん","さつまいもにゃん","おんせんにゃん","ふじにゃん","べにふじにゃん","しろくまにゃん","いりおもてやまねこにゃん","おきなわしーさーにゃん あか","おきなわしーさーにゃん あお","おきなわじんべえにゃん","かぼすにゃん","あかおににゃん","あおおににゃん","ひゅうがなつにゃん","まんごーにゃん","じとっこにゃん","はにわにゃん","くろぶたにゃん","ふくにゃん","ゆずにゃん","うどんにゃん","だざいふうめにゃん","らーめんにゃん","あまおうにゃん","ばななうりにゃん","なすにゃん","ひこうきにゃん","東京タワーにゃん","東京スカイツリーにゃん","あじさいにゃん","江ノ電にゃん","おこめにゃん","ときにゃん","かきのたねにゃん","ささだんごにゃん","ぴーちにゃん","しんしゅうりんごにゃん","しゃいんますかっとにゃん","おこじょにゃん"];
+let storageOK=true;
+try{localStorage.setItem("__t","1");localStorage.removeItem("__t");}catch(e){storageOK=false;}
+function readJSON(k,def){try{const raw=localStorage.getItem(k);if(!raw)return def;const v=JSON.parse(raw);return v&&typeof v==="object"&&!Array.isArray(v)?v:def;}catch(e){return def;}}
+/* 共有の設定。共有リンクの「#」以降に入っていて、サーバーには送られません。つなぐ先は Firebase のURLだけに限定します */
+function okDb(u){return /^https:\/\/[a-z0-9-]+(\.[a-z0-9-]+)*\.(firebaseio\.com|firebasedatabase\.app)\/?$/i.test(u||"");}
+function okRoom(r){return /^[A-Za-z0-9_-]{16,80}$/.test(r||"");}
+function loadSync(){
+  let cfg=readJSON(SYNC_KEY,null);
+  const h=location.hash.replace(/^#/,"");
+  if(h){
+    const p=new URLSearchParams(h),db=(p.get("db")||"").replace(/\/+$/,""),room=p.get("room")||"";
+    if(okDb(db)&&okRoom(room)){
+      const n={db,room,ro:p.get("view")==="1"};
+      const same=cfg&&cfg.db===n.db&&cfg.room===n.room&&!!cfg.ro===n.ro;
+      if(same||!cfg||confirm("この端末は、別の共有につながっています。開いたリンクの共有に切り替えますか？")){
+        cfg=n;let saved=false;
+        try{localStorage.setItem(SYNC_KEY,JSON.stringify(cfg));saved=true;}catch(e){}
+        if(saved&&history.replaceState)history.replaceState(null,"",location.pathname+location.search);
+      }
+    }
+  }
+  return cfg&&okDb(cfg.db)&&okRoom(cfg.room)?{db:cfg.db.replace(/\/+$/,""),room:cfg.room,ro:!!cfg.ro}:null;
+}
+let SYNC=loadSync();
+const SUF=SYNC&&SYNC.ro?"_ro":"";   /* 閲覧専用の端末は、別の保存場所（キャッシュ）を使う */
+const REC_KEY="korokoro_map_v3"+SUF,PHOTO_KEY="korokoro_map_photos_v1"+SUF;
+let rec=readJSON(REC_KEY,null);
+if(rec===null){rec={};if(!SUF){const old=readJSON(OLD_KEY,{});Object.keys(old).forEach(k=>{if(old[k]&&LEGACY[k-1])rec[LEGACY[k-1]]={owned:true};});}}
+let photos=readJSON(PHOTO_KEY,{});
+/* 写真があるのに更新時刻が無いもの（同期機能より前に登録した写真）に時刻を付ける */
+if(!SUF)Object.keys(photos).forEach(id=>{const r=rec[id]||(rec[id]={});if(r.pt===undefined){r.pt=Date.now();r.ph=true;}});
+function saveRec(){try{localStorage.setItem(REC_KEY,JSON.stringify(rec));return true;}catch(e){storageOK=false;return false;}}
+function savePhotos(){try{localStorage.setItem(PHOTO_KEY,JSON.stringify(photos));return true;}catch(e){return false;}}
+if(Object.keys(rec).length)saveRec();
+
+/* ---------- 共通 ---------- */
+function $(id){return document.getElementById(id);}
+function esc(s){return String(s==null?"":s).replace(/[&<>"']/g,ch=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[ch]));}
+function safeUrl(u){return /^https?:\/\//i.test(u||"")?u:"";}
+function isOwned(id){return !!(rec[id]&&rec[id].owned);}
+function isNew(c){return !!c.added&&(Date.now()-Date.parse(c.added))<45*86400000;}
+const REGION_COLORS={"北海道・東北":"#8ab8ff","関東":"#ffa3b5","中部":"#9bd99f","近畿":"#ffd479","中国・四国":"#c8a5ff","九州・沖縄":"#ffaa78","地域限定":"#84d9d9"};
+/* 自作のネコ顔アイコン（公式画像は使わない） */
+function faceSVG(color){return `<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><rect width="64" height="64" fill="${color}"/><path d="M14 32 L16 10 L30 22 Z M50 32 L48 10 L34 22 Z" fill="#fff"/><ellipse cx="32" cy="38" rx="21" ry="18" fill="#fff"/><circle cx="24" cy="37" r="2.6" fill="#333"/><circle cx="40" cy="37" r="2.6" fill="#333"/><path d="M30 42 h4 l-2 2.6 z" fill="#f28ba0"/><path d="M14 40 l-8 -2 M14 44 l-8 2 M50 40 l8 -2 M50 44 l8 2" stroke="#999" stroke-width="1.2" stroke-linecap="round"/></svg>`;}
+function faceHTML(c){return photos[c.id]?`<img src="${photos[c.id]}" alt="">`:faceSVG(REGION_COLORS[c.region]||"#a9b4c2");}
+
+/* ---------- 状態 ---------- */
+let DATA=null,cats=[],catById={},REGIONS=[],offs={};
+const state={q:"",f:"all",region:""};
+let map=null,cluster=null;const markerById={};
+const hasMap=typeof L!=="undefined";
+
+async function loadCats(){
+  try{const r=await fetch("cats.json",{cache:"no-cache"});if(r.ok){const j=await r.json();if(j&&Array.isArray(j.cats)&&j.cats.length)return j;}}catch(e){}
+  return EMBEDDED;
+}
+
+/* 同じ座標のにゃんこは、ピクセル単位で円形にずらして重ならないようにする */
+function computeOffsets(){
+  const g={};cats.forEach(c=>{const k=c.lat+","+c.lng;(g[k]=g[k]||[]).push(c);});
+  Object.values(g).forEach(a=>{const n=a.length;a.forEach((c,i)=>{
+    if(n===1){offs[c.id]=[0,0];return;}
+    const r=26/Math.sin(Math.PI/n),s=n===2?Math.PI:-Math.PI/2,t=s+2*Math.PI*i/n;
+    offs[c.id]=[Math.round(r*Math.cos(t)),Math.round(r*Math.sin(t))];});});
+}
+
+/* ---------- 地図 ---------- */
+function icon(c){const o=offs[c.id]||[0,0],dx=o[0],dy=o[1];
+  return L.divIcon({className:"",html:`<div class="map-cat ${isOwned(c.id)?"owned":""}" style="width:48px;height:48px">${faceHTML(c)}</div>`,iconSize:[52,52],iconAnchor:[26-dx,26-dy],popupAnchor:[dx,dy-24],tooltipAnchor:[dx,dy-26]});}
+function clusterIcon(cl){const ms=cl.getAllChildMarkers(),n=ms.length,o=ms.filter(m=>isOwned(m.options.catId)).length;
+  return L.divIcon({html:`<div class="cl ${o===n?"full":o?"part":""}"><b>${o}/${n}</b></div>`,className:"",iconSize:[46,46]});}
+function popup(c){const r=rec[c.id]||{},o=!!r.owned;
+  return `<div class="pop"><div class="popimg ${o?"owned":""}">${faceHTML(c)}</div><b>${esc(c.name)}</b>${isNew(c)?'<span class="new">NEW</span>':""}<br><span class="pa">${esc(c.area)}${c.approx?"（位置は目安）":""}</span>${r.place?`<div class="pa">📍${esc(r.place)}</div>`:""}<div class="pbtns"><button class="popup-btn" onclick="toggleOwned(${c.idx})">${o?"持っていないにする":"持っている！"}</button><button class="popup-btn sec" onclick="openEdit(${c.idx})">写真・メモ</button></div></div>`;}
+function initMap(){
+  if(!hasMap){$("map").innerHTML='<div class="mapfail">地図ライブラリ（Leaflet）を読み込めませんでした。インターネット接続を確認して再読み込みしてください。下の一覧は使えます。</div>';return;}
+  map=L.map("map",{zoomSnap:0.5,minZoom:4}).setView([35.7,137.8],5.5);
+  const gsi=L.tileLayer("https://cyberjapandata.gsi.go.jp/xyz/std/{z}/{x}/{y}.png",{minNativeZoom:5,maxNativeZoom:18,maxZoom:18,attribution:'<a href="https://maps.gsi.go.jp/development/ichiran.html" target="_blank" rel="noopener">地理院タイル</a>'}).addTo(map);
+  const osm=L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png",{maxZoom:18,attribution:"© OpenStreetMap contributors"});
+  L.control.layers({"地理院地図":gsi,"OpenStreetMap":osm},null,{position:"topright"}).addTo(map);
+  /* 拡大レベル9未満では近いものをまとめて「所有数/件数」で表示（プラグインが読めなければ通常表示） */
+  cluster=typeof L.markerClusterGroup==="function"
+    ?L.markerClusterGroup({showCoverageOnHover:false,maxClusterRadius:48,disableClusteringAtZoom:9,spiderfyOnMaxZoom:false,iconCreateFunction:clusterIcon})
+    :L.layerGroup();
+  cluster.addTo(map);
+  cats.forEach(c=>{const m=L.marker([c.lat,c.lng],{icon:icon(c),riseOnHover:true,catId:c.id}).bindPopup(popup(c)).bindTooltip(c.name,{direction:"top"});
+    m.on("popupopen",()=>m.closeTooltip());markerById[c.id]=m;});
+  const legend=L.control({position:"bottomright"});
+  legend.onAdd=function(){const d=L.DomUtil.create("div","legend");d.innerHTML="カラー＝所有　／　白黒＝未所有";return d;};
+  legend.addTo(map);
+}
+function refreshMarker(c){const m=markerById[c.id];if(!m)return;m.setIcon(icon(c));m.setPopupContent(popup(c));if(cluster&&cluster.refreshClusters)cluster.refreshClusters();}
+function renderMap(){if(!map)return;cluster.clearLayers();const ms=cats.filter(match).map(c=>markerById[c.id]);
+  if(cluster.addLayers)cluster.addLayers(ms);else ms.forEach(m=>cluster.addLayer(m));}
+function showOnMap(i){const c=cats[i],m=markerById[c.id];if(!map||!m)return;
+  window.scrollTo({top:$("map").offsetTop-70,behavior:"smooth"});
+  if(cluster.zoomToShowLayer&&cluster.hasLayer(m))cluster.zoomToShowLayer(m,()=>m.openPopup());
+  else{map.setView(m.getLatLng(),Math.max(map.getZoom(),9));m.openPopup();}}
+
+/* ---------- 一覧・統計 ---------- */
+function match(c){
+  const r=rec[c.id]||{};
+  if(state.region&&c.region!==state.region)return false;
+  if(state.f==="owned"&&!r.owned)return false;
+  if(state.f==="todo"&&r.owned)return false;
+  if(state.f==="new"&&!isNew(c))return false;
+  const q=state.q;if(!q)return true;
+  return (c.name+" "+c.area+" "+c.region+" "+(r.place||"")+" "+(r.note||"")).toLowerCase().includes(q);
+}
+function itemEl(c){
+  const o=isOwned(c.id),r=rec[c.id]||{},d=document.createElement("div");d.className="item"+(o?" owned":"");
+  d.innerHTML=`<div class="ico ${o?"owned":""}">${faceHTML(c)}</div><div class="nm"><b>${esc(c.name)}</b>${isNew(c)?'<span class="new">NEW</span>':""}<div class="area">${esc(c.area)}${c.approx?"（位置は目安）":""}</div>${r.place?`<div class="area">📍${esc(r.place)}</div>`:""}</div><div class="acts"><span class="st">${o?"所有済み":"未所有"}</span><button class="mini" data-a="map">地図</button><button class="mini" data-a="edit">編集</button></div>`;
+  d.onclick=e=>{const b=e.target.closest("button");if(b){e.stopPropagation();if(b.dataset.a==="map")showOnMap(c.idx);else openEdit(c.idx);return;}toggleOwned(c.idx);};
+  return d;
+}
+function renderList(){
+  const list=$("list");list.innerHTML="";const groups={};
+  cats.filter(match).forEach(c=>(groups[c.region]=groups[c.region]||[]).push(c));
+  REGIONS.forEach(r=>{const g=groups[r];if(!g)return;
+    const tot=cats.filter(c=>c.region===r),own=tot.filter(c=>isOwned(c.id)).length;
+    const h=document.createElement("h2");h.className="rg";h.textContent=`${r}　${own}/${tot.length}`;list.appendChild(h);
+    const grid=document.createElement("div");grid.className="grid";g.forEach(c=>grid.appendChild(itemEl(c)));list.appendChild(grid);});
+  if(!list.children.length)list.innerHTML='<div class="note">該当するにゃんこはいません。</div>';
+}
+function renderStats(){
+  const n=cats.filter(c=>isOwned(c.id)).length,t=cats.length||1,nw=cats.filter(isNew).length;
+  $("stats").textContent=`所有：${n} / ${cats.length}　｜　コンプリート率：${(n/t*100).toFixed(1)}%`+(nw?`　｜　NEW ${nw}件`:"")+(storageOK?"":"　※このブラウザでは保存できません（閉じるとリセットされます）");
+  $("bar").firstElementChild.style.width=(n/t*100)+"%";
+}
+function render(){renderStats();renderMap();renderList();}
+
+/* ---------- 記録の変更 ---------- */
+function setOwned(id,v){if(RO())return;const r=rec[id]||(rec[id]={});r.owned=v;r.t=Date.now();saveRec();
+  const c=catById[id];if(c)refreshMarker(c);
+  if(state.f!=="all")renderMap();
+  renderStats();renderList();scheduleSync();}
+function toggleOwned(i){const c=cats[i];if(c)setOwned(c.id,!isOwned(c.id));}
+function setAll(v){if(RO())return;if(!confirm(v?"すべて「持っている」にします。よろしいですか？":"すべて「未所有」に戻します。よろしいですか？"))return;
+  const now=Date.now();cats.forEach(c=>{const r=rec[c.id]||(rec[c.id]={});r.owned=v;r.t=now;});saveRec();cats.forEach(refreshMarker);render();scheduleSync();}
+function exportRec(){
+  const blob=new Blob([JSON.stringify({app:"korokoro-map",version:4,exported:new Date().toISOString(),records:rec,photos:photos})],{type:"application/json"});
+  const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="korokoro-records.json";document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+}
+function importRec(file){
+  if(RO())return;
+  const fr=new FileReader();
+  fr.onload=()=>{try{const j=JSON.parse(fr.result),r=j&&j.records;if(!r||typeof r!=="object"||Array.isArray(r))throw 0;
+    if(!confirm("いまの記録を、読み込んだ内容で置き換えます。よろしいですか？"))return;
+    const now=Date.now(),nr={},np={};
+    Object.keys(r).forEach(id=>{const v=cleanRec(r[id]);if(v){delete v.pt;delete v.ph;v.t=now;nr[id]=v;}});
+    if(j.photos&&typeof j.photos==="object"&&!Array.isArray(j.photos)){Object.keys(j.photos).forEach(id=>{if(okPhoto(j.photos[id]))np[id]=j.photos[id];});}
+    const keep=Object.keys(np).length?np:photos;   /* 写真の入っていない古い書き出しなら、いまの写真は残す */
+    Object.keys(rec).forEach(id=>{if(!nr[id])nr[id]={owned:false,t:now};});   /* 置き換えで無くなったものは、共有側でも消えるよう印を付ける */
+    Object.keys(keep).forEach(id=>{(nr[id]||(nr[id]={t:now})).pt=now;nr[id].ph=true;});
+    Object.keys(photos).forEach(id=>{if(!keep[id]){(nr[id]||(nr[id]={t:now})).pt=now;nr[id].ph=false;}});
+    rec=nr;photos=keep;saveRec();savePhotos();cats.forEach(refreshMarker);render();scheduleSync();}catch(e){alert("読み込めませんでした。「記録を書き出す」で保存したJSONファイルを選んでください。");}};
+  fr.readAsText(file);
+}
+
+/* ---------- 編集ダイアログ（写真の切り抜き） ---------- */
+const cv=$("cv"),cx=cv.getContext("2d");
+let editIdx=-1,cimg=null,cz=1,cox=0,coy=0,cdirty=false,cremove=false,drag=null;
+function baseScale(){return 240/Math.min(cimg.naturalWidth,cimg.naturalHeight);}
+function clampOff(){if(!cimg)return;const s=baseScale()*cz,mx=Math.max(0,(cimg.naturalWidth*s-240)/2),my=Math.max(0,(cimg.naturalHeight*s-240)/2);
+  cox=Math.min(mx,Math.max(-mx,cox));coy=Math.min(my,Math.max(-my,coy));}
+function drawCrop(){cx.fillStyle="#eee";cx.fillRect(0,0,240,240);if(!cimg)return;
+  const s=baseScale()*cz,w=cimg.naturalWidth*s,h=cimg.naturalHeight*s;cx.drawImage(cimg,120+cox-w/2,120+coy-h/2,w,h);}
+function showDlg(){const d=$("dlg");if(d.showModal)d.showModal();else d.setAttribute("open","");}
+function closeDlg(){const d=$("dlg");if(d.close)d.close();else d.removeAttribute("open");}
+function exportPhoto(){const o=document.createElement("canvas");o.width=o.height=200;o.getContext("2d").drawImage(cv,0,0,240,240,0,0,200,200);return o.toDataURL("image/jpeg",0.82);}
+function openEdit(i){
+  if(RO())return;
+  const c=cats[i];if(!c)return;const r=rec[c.id]||{};editIdx=i;
+  $("dTitle").textContent=c.name;$("dArea").textContent=c.area;
+  $("dOwned").checked=!!r.owned;$("dPlace").value=r.place||"";$("dDate").value=r.date||"";$("dUrl").value=r.url||"";$("dNote").value=r.note||"";
+  cimg=null;cz=1;cox=0;coy=0;cdirty=false;cremove=false;$("zoom").value=1;drawCrop();
+  if(photos[c.id]){const im=new Image();im.onload=()=>{if(editIdx===i&&!cimg){cimg=im;drawCrop();}};im.src=photos[c.id];}
+  showDlg();
+}
+function saveEdit(){
+  const c=cats[editIdx];if(!c)return;const id=c.id;
+  const f={place:$("dPlace").value.trim(),date:$("dDate").value,url:$("dUrl").value.trim(),note:$("dNote").value.trim()};
+  if(f.url&&!safeUrl(f.url)){alert("ブログのURLは http:// または https:// から始まる形で入力してください。");return;}
+  const old=rec[id]||{},now=Date.now(),nr={owned:$("dOwned").checked,t:now};
+  Object.keys(f).forEach(k=>{if(f[k])nr[k]=f[k];});
+  if(old.pt!==undefined){nr.pt=old.pt;nr.ph=old.ph;}
+  let ok=true;
+  if(cremove){delete photos[id];nr.pt=now;nr.ph=false;ok=savePhotos();}
+  else if(cdirty&&cimg){const prev=photos[id];photos[id]=exportPhoto();nr.pt=now;nr.ph=true;
+    if(!savePhotos()){if(prev)photos[id]=prev;else delete photos[id];nr.pt=old.pt;nr.ph=old.ph;if(nr.pt===undefined){delete nr.pt;delete nr.ph;}alert("写真を保存できませんでした（ブラウザの保存容量がいっぱいの可能性があります）。");}}
+  rec[id]=nr;
+  if(!saveRec()||!ok)alert("記録を保存できませんでした。");
+  closeDlg();refreshMarker(c);render();scheduleSync();
+}
+cv.addEventListener("pointerdown",e=>{if(!cimg)return;drag={x:e.clientX,y:e.clientY};cv.setPointerCapture(e.pointerId);});
+cv.addEventListener("pointermove",e=>{if(!drag)return;cox+=e.clientX-drag.x;coy+=e.clientY-drag.y;drag={x:e.clientX,y:e.clientY};cdirty=true;clampOff();drawCrop();});
+cv.addEventListener("pointerup",()=>{drag=null;});cv.addEventListener("pointercancel",()=>{drag=null;});
+$("zoom").addEventListener("input",e=>{cz=+e.target.value;cdirty=true;clampOff();drawCrop();});
+$("file").addEventListener("change",e=>{
+  const f=e.target.files[0];if(!f)return;const u=URL.createObjectURL(f),im=new Image();
+  im.onload=()=>{cimg=im;cz=1;cox=0;coy=0;$("zoom").value=1;cdirty=true;cremove=false;drawCrop();URL.revokeObjectURL(u);};
+  im.onerror=()=>{alert("画像を読み込めませんでした。");URL.revokeObjectURL(u);};
+  im.src=u;e.target.value="";
+});
+$("rmPhoto").onclick=()=>{cimg=null;cremove=true;cdirty=false;drawCrop();};
+$("dCancel").onclick=closeDlg;$("dSave").onclick=saveEdit;
+
+/* ---------- 共有・同期（Firebase Realtime Database の REST API） ---------- */
+/* 保存の考え方：この端末に保存 → サーバーと突き合わせ、項目ごとに「新しい方」を採用。写真も同じ。 */
+function RO(){return !!(SYNC&&SYNC.ro);}
+function b64key(id){const b=new TextEncoder().encode(id);let s="";b.forEach(x=>{s+=String.fromCharCode(x);});return btoa(s).replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/,"");}
+function okPhoto(s){return typeof s==="string"&&s.length<600000&&/^data:image\/jpeg;base64,[A-Za-z0-9+\/=]+$/.test(s);}
+function cleanRec(v){
+  if(!v||typeof v!=="object")return null;const o={};
+  if(typeof v.owned==="boolean")o.owned=v.owned;
+  [["place",100],["date",10],["url",300],["note",500]].forEach(a=>{if(typeof v[a[0]]==="string"&&v[a[0]])o[a[0]]=v[a[0]].slice(0,a[1]);});
+  if(o.url&&!safeUrl(o.url))delete o.url;
+  if(Number.isFinite(v.t))o.t=v.t;if(Number.isFinite(v.pt))o.pt=v.pt;if(typeof v.ph==="boolean")o.ph=v.ph;
+  return o;
+}
+function cleanRemote(v){const o=cleanRec(v);if(!o||typeof v.id!=="string"||!v.id)return null;o.id=v.id.slice(0,200);return o;}
+function sig(o){return JSON.stringify(o||null,o?Object.keys(o).sort():undefined);}
+/* 項目（所有・場所・メモ…）は t、写真は pt が新しい方を採用 */
+function mergeRec(l,r,hasPhoto){
+  l=l||{};r=r||{};const out={};
+  const lHas=l.t!==undefined||["owned","place","date","url","note"].some(k=>l[k]!==undefined);   /* こちらに項目の記録が無ければ、サーバー側を採用 */
+  const fs=(!lHas||(r.t||0)>(l.t||0))?r:l;
+  ["owned","place","date","url","note","t"].forEach(k=>{if(fs[k]!==undefined)out[k]=fs[k];});
+  const lp=(l.ph&&!hasPhoto)?0:(l.pt||0),rp=r.pt||0,useR=rp>lp,ps=useR?r:l;   /* 「写真あり」なのに実物が無い端末は、写真の時刻を0扱い */
+  if(ps.pt!==undefined){out.pt=ps.pt;out.ph=!!ps.ph&&(useR||hasPhoto);}
+  return out;
+}
+function dbUrl(p){return SYNC.db+"/rooms/"+SYNC.room+p+".json";}
+async function dbGet(p){const r=await fetch(dbUrl(p),{cache:"no-store"});if(!r.ok)throw new Error("読み込み失敗 ("+r.status+")");return r.json();}
+async function dbPut(p,v){const r=await fetch(dbUrl(p),{method:"PUT",headers:{"Content-Type":"application/json"},body:JSON.stringify(v)});if(!r.ok)throw new Error("書き込み失敗 ("+r.status+")");}
+async function dbDel(p){const r=await fetch(dbUrl(p),{method:"DELETE"});if(!r.ok)throw new Error("削除失敗 ("+r.status+")");}
+async function runLimited(fns,n){let i=0,err=null;
+  await Promise.all(Array.from({length:Math.min(n,fns.length)},async()=>{while(i<fns.length){const f=fns[i++];try{await f();}catch(e){err=err||e;}}}));
+  if(err)throw err;}
+let syncing=false,syncAgain=false,syncTimer=null,syncMsg="";
+function setChip(txt,isErr){
+  const c=$("syncChip");if(!SYNC){c.hidden=true;return;}
+  c.hidden=false;c.textContent="☁ "+txt;c.classList.toggle("err",!!isErr);syncMsg=txt;
+  if($("syncStatus"))$("syncStatus").textContent=(RO()?"閲覧専用でつながっています：":"つながっています：")+txt;
+}
+function hhmm(){const d=new Date();return String(d.getHours()).padStart(2,"0")+":"+String(d.getMinutes()).padStart(2,"0");}
+function scheduleSync(){if(!SYNC)return;clearTimeout(syncTimer);syncTimer=setTimeout(syncNow,700);}
+async function syncNow(){
+  if(!SYNC)return;
+  if(syncing){syncAgain=true;return;}
+  syncing=true;setChip("同期中…");
+  let changed=false,err=null;const ro=RO();
+  try{
+    const raw=(await dbGet("/records"))||{},remote={};
+    Object.values(raw).forEach(v=>{const c=cleanRemote(v);if(c)remote[c.id]=c;});
+    if(ro)Object.keys(rec).forEach(id=>{if(!remote[id]){delete rec[id];delete photos[id];changed=true;}});   /* 閲覧専用：サーバーが正 */
+    const pushes=[],downloads=[];
+    new Set([...Object.keys(remote),...Object.keys(rec)]).forEach(id=>{
+      const l=rec[id],r=remote[id];if(!l&&!r)return;
+      const key=b64key(id),hasPhoto=!!photos[id];
+      let m;
+      if(ro){m=Object.assign({},r);delete m.id;}else m=mergeRec(l,r,hasPhoto);
+      const lp=l?((l.ph&&!hasPhoto)?0:(l.pt||0)):0,rp=r?(r.pt||0):0;
+      if(r&&r.ph&&m.ph&&(rp>lp||!hasPhoto))downloads.push({id,key});
+      if(!m.ph&&hasPhoto&&rp>lp){delete photos[id];changed=true;}
+      if(!ro&&(!r||(m.t||0)>(r.t||0)||(m.pt||0)>rp)){
+        const photoNewer=(m.pt||0)>rp;
+        pushes.push(async()=>{
+          if(photoNewer&&m.ph&&photos[id])await dbPut("/photos/"+key,photos[id]);
+          else if(photoNewer&&!m.ph)await dbDel("/photos/"+key);
+          await dbPut("/records/"+key,Object.assign({id:id},m));
+        });
+      }
+      if(sig(l)!==sig(m)){rec[id]=m;changed=true;}
+    });
+    await runLimited(pushes,4);
+    await runLimited(downloads.map(d=>async()=>{const s=await dbGet("/photos/"+d.key);if(okPhoto(s)){photos[d.id]=s;changed=true;}}),4);
+  }catch(e){err=e;}
+  if(changed){saveRec();if(!savePhotos()&&!err)err=new Error("この端末に写真を保存できません（容量不足）");cats.forEach(refreshMarker);render();}
+  if(err)setChip("同期エラー（あとで再試行します）",true);else setChip("同期OK "+hhmm());
+  if(err&&$("syncStatus"))$("syncStatus").textContent+="　"+(err.message||"");
+  syncing=false;
+  if(syncAgain){syncAgain=false;scheduleSync();}
+}
+const SITE_KEY="korokoro_site_base";
+function readStr(k){try{return localStorage.getItem(k)||"";}catch(e){return "";}}
+function siteBase(){if(location.protocol!=="file:")return location.href.split("#")[0];const v=readStr(SITE_KEY);return /^https:\/\//i.test(v)?v.split("#")[0]:"";}
+function shareLink(ro){const b=siteBase();if(!b)return "（上の「公開したサイトのURL」を入れると、ここにリンクが出ます）";
+  return b+"#db="+encodeURIComponent(SYNC.db)+"&room="+SYNC.room+(ro?"&view=1":"");}
+function refreshLinks(){if(!SYNC)return;if(!RO())$("linkEdit").value=shareLink(false);$("linkView").value=shareLink(true);}
+function openSync(){
+  const on=!!SYNC;
+  $("syncOff").hidden=on;$("syncOn").hidden=!on;$("siteRow").hidden=location.protocol!=="file:";$("siteBase").value=readStr(SITE_KEY);
+  if(on){$("rowEdit").hidden=RO();refreshLinks();setChip(syncMsg||"未同期");}
+  const d=$("syncDlg");if(d.showModal){if(!d.open)d.showModal();}else d.setAttribute("open","");
+}
+async function createRoom(){
+  const db=$("syncDb").value.trim().replace(/\/+$/,"");
+  if(!okDb(db)){alert("URLは https://〜.firebasedatabase.app または https://〜.firebaseio.com の形で入力してください。");return;}
+  const room=Array.from(crypto.getRandomValues(new Uint8Array(18)),b=>b.toString(16).padStart(2,"0")).join("");
+  SYNC={db,room,ro:false};
+  try{await dbGet("/records");}catch(e){SYNC=null;alert("データベースにつながりませんでした。URLと、ルールの設定（README参照）を確認してください。\n"+(e.message||""));return;}
+  try{localStorage.setItem(SYNC_KEY,JSON.stringify(SYNC));}catch(e){alert("この端末では共有の設定を保存できません。共有は、このページを開いているあいだだけ有効です。");}
+  openSync();await syncNow();
+}
+function copyLink(id){const el=$(id);if(!/^https?:\/\//.test(el.value)){alert("先に「公開したサイトのURL」を入れてください。");return;}el.focus();el.select();el.setSelectionRange(0,el.value.length);
+  if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(el.value).then(()=>alert("コピーしました"),()=>{});
+  else{let ok=false;try{ok=document.execCommand("copy");}catch(e){}alert(ok?"コピーしました":"リンクを長押ししてコピーしてください");}}
+function stopSync(){if(!confirm("共有をやめます。この端末のデータは残りますが、他の端末とは同期されなくなります（サーバー上のデータは消えません）。よろしいですか？"))return;
+  try{localStorage.removeItem(SYNC_KEY);}catch(e){}location.reload();}
+function bindSync(){
+  $("btnSync").onclick=openSync;$("syncChip").onclick=openSync;
+  $("siteBase").addEventListener("input",e=>{const v=e.target.value.trim();if(/^https:\/\//i.test(v)){try{localStorage.setItem(SITE_KEY,v);}catch(x){}}refreshLinks();});
+  $("syncCreate").onclick=createRoom;$("syncStop").onclick=stopSync;$("syncNowBtn").onclick=syncNow;
+  document.querySelectorAll("[data-close]").forEach(b=>b.onclick=()=>{const d=$(b.dataset.close);if(d.close)d.close();else d.removeAttribute("open");});
+  document.querySelectorAll("[data-copy]").forEach(b=>b.onclick=()=>copyLink(b.dataset.copy));
+  document.querySelectorAll("[data-share]").forEach(b=>{if(navigator.share){b.hidden=false;b.onclick=()=>navigator.share({title:"ころころにゃんこMAP",url:$(b.dataset.share).value}).catch(()=>{});}});
+  document.body.classList.toggle("ro",RO());$("roBanner").hidden=!RO();
+  if(SYNC){setChip("未同期");
+    setInterval(()=>{if(!document.hidden)syncNow();},60000);
+    document.addEventListener("visibilitychange",()=>{if(!document.hidden)syncNow();});
+    window.addEventListener("online",syncNow);}
+}
+
+/* ---------- 起動 ---------- */
+function bindUI(){
+  $("search").addEventListener("input",e=>{state.q=e.target.value.trim().toLowerCase();render();});
+  $("btnClear").onclick=()=>{state.q="";state.f="all";state.region="";$("search").value="";$("region").value="";syncFilterButtons();render();};
+  $("btnAllOn").onclick=()=>setAll(true);$("btnAllOff").onclick=()=>setAll(false);
+  $("btnExport").onclick=exportRec;
+  $("importFile").addEventListener("change",e=>{const f=e.target.files[0];if(f)importRec(f);e.target.value="";});
+  document.querySelectorAll("[data-f]").forEach(b=>b.onclick=()=>{state.f=b.dataset.f;syncFilterButtons();render();});
+  $("region").addEventListener("change",e=>{state.region=e.target.value;render();});
+}
+function syncFilterButtons(){document.querySelectorAll("[data-f]").forEach(b=>b.classList.toggle("active",b.dataset.f===state.f));}
+function start(data){
+  DATA=data;cats=data.cats.map((c,i)=>Object.assign({},c,{idx:i}));
+  cats.forEach(c=>{catById[c.id]=c;});
+  REGIONS=[...new Set(cats.map(c=>c.region))];
+  REGIONS.forEach(r=>{const o=document.createElement("option");o.value=r;o.textContent=r;$("region").appendChild(o);});
+  $("meta").textContent=`公式ページ掲載 ${cats.length}種　／　データ更新日 ${data.updated||"不明"}`;
+  computeOffsets();bindUI();bindSync();initMap();render();
+  if(SYNC)syncNow();
+}
+loadCats().then(start);
+</script></body></html>
