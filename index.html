@@ -421,7 +421,7 @@ async function syncNow(){
       if(ro){m=Object.assign({},r);delete m.id;}else m=mergeRec(l,r,hasPhoto);
       const lp=l?((l.ph&&!hasPhoto)?0:(l.pt||0)):0,rp=r?(r.pt||0):0;
       if(r&&r.ph&&m.ph&&(rp>lp||!hasPhoto))downloads.push({id,key});
-      if(!m.ph&&hasPhoto&&rp>lp){delete photos[id];changed=true;}
+      if(!m.ph&&hasPhoto&&rp>lp){changed=true;}
       if(!ro&&(!r||(m.t||0)>(r.t||0)||(m.pt||0)>rp)){
         const photoNewer=(m.pt||0)>rp;
         pushes.push(async()=>{
