@@ -1,6 +1,6 @@
 {
  "version": 1,
- "updated": "2026-09-19",
+ "updated": "2026-10-09",
  "source": "https://yell-world.jp/gotouchi-korokoronyanko/",
  "cats": [
   {
@@ -562,6 +562,16 @@
    "lng": 135.83,
    "approx": false,
    "added": null
+  },
+  {
+   "id": "わかやまみかんにゃん",
+   "name": "わかやまみかんにゃん",
+   "area": "和歌山",
+   "region": "近畿",
+   "lat": 34.23,
+   "lng": 135.17,
+   "approx": false,
+   "added": "2026-10-09"
   },
   {
    "id": "ひろしまかきにゃん",
