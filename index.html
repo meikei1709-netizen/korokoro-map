@@ -83,6 +83,7 @@ body.ro .mini[data-a=edit],body.ro #btnAllOn,body.ro #btnAllOff,body.ro .importL
  #map{height:auto;min-height:0;border-radius:12px;overflow:hidden;box-shadow:0 1px 5px #bbb}
  #side{min-height:0;overflow-y:auto;padding:0 6px 0 0}
 }
+#qrBox{display:flex;justify-content:center;margin:6px 0}#qrBox svg{width:180px;height:180px;background:#fff;padding:6px;border-radius:8px}
 </style></head>
 <body>
 <header>
@@ -129,13 +130,14 @@ body.ro .mini[data-a=edit],body.ro #btnAllOn,body.ro #btnAllOff,body.ro .importL
 <h3>☁ 共有・同期</h3>
 <div class="row" id="siteRow" hidden>公開したサイトのURL<input type="url" id="siteBase" placeholder="https://ユーザー名.github.io/korokoro-map/"><div class="hint" style="text-align:left">いまはパソコン内のファイルとして開いています。GitHub Pages などに公開したURLを入れると、家族に送れるリンクが作られます。</div></div>
 <div id="syncOff">
-<div class="row">スマホや家族と、記録と写真を共有できます。無料の Firebase でデータベースを1つ用意し、そのURLを下に入れてください（手順は README にあります）。「共有を作る」を押すと、いまの記録と写真がアップロードされます。</div>
-<div class="row"><label for="syncDb">データベースのURL</label><input type="url" id="syncDb" placeholder="https://xxxx-default-rtdb.asia-southeast1.firebasedatabase.app"></div>
+<div class="row" id="syncIntro">スマホや家族と、記録と写真を共有できます。「共有を作る」を押すと、いまの記録と写真がアップロードされ、別の端末で開くためのリンクとQRコードが出ます。</div>
+<div class="row" id="rowDb"><label for="syncDb">データベースのURL</label><input type="url" id="syncDb" placeholder="https://xxxx-default-rtdb.asia-southeast1.firebasedatabase.app"></div>
 <div class="drow"><button type="button" data-close="syncDlg">閉じる</button><button type="button" id="syncCreate" class="primary">共有を作る</button></div>
 <div class="hint" style="text-align:left">共有リンクをもらっている場合は、そのリンクを開くだけでつながります。</div>
 </div>
 <div id="syncOn">
 <div class="row" id="syncStatus"></div>
+<div class="row" id="rowQr">別の端末とつなぐ：もう1台のスマホのカメラでこのQRコードを読み取ってください<div id="qrBox"></div></div>
 <div class="row" id="rowEdit">編集もできるリンク（自分・家族用）<div class="linkrow"><input id="linkEdit" readonly><button type="button" data-copy="linkEdit">コピー</button><button type="button" data-share="linkEdit" class="shareBtn" hidden>共有</button></div></div>
 <div class="row">閲覧専用リンク<div class="linkrow"><input id="linkView" readonly><button type="button" data-copy="linkView">コピー</button><button type="button" data-share="linkView" class="shareBtn" hidden>共有</button></div></div>
 <div class="hint" style="text-align:left">リンクを知っている人は、誰でも記録や写真を見られます（編集リンクなら変更もできます）。家族以外には送らないでください。「閲覧専用」は、うっかり編集を防ぐためのものです。</div>
@@ -156,6 +158,8 @@ const LEGACY=["桔梗信玄餅にゃん","のぶながにゃん","さつまい�
 let storageOK=true;
 try{localStorage.setItem("__t","1");localStorage.removeItem("__t");}catch(e){storageOK=false;}
 function readJSON(k,def){try{const raw=localStorage.getItem(k);if(!raw)return def;const v=JSON.parse(raw);return v&&typeof v==="object"&&!Array.isArray(v)?v:def;}catch(e){return def;}}
+/* ★ ここに Firebase Realtime Database のURLを入れると、利用者はURLを入力しなくても「共有を作る」だけで同期できます */
+const DEFAULT_DB="https://korokoro-nyanko-default-rtdb.asia-southeast1.firebasedatabase.app";
 /* 共有の設定。共有リンクの「#」以降に入っていて、サーバーには送られません。つなぐ先は Firebase のURLだけに限定します */
 function okDb(u){return /^https:\/\/[a-z0-9-]+(\.[a-z0-9-]+)*\.(firebaseio\.com|firebasedatabase\.app)\/?$/i.test(u||"");}
 function okRoom(r){return /^[A-Za-z0-9_-]{16,80}$/.test(r||"");}
@@ -163,7 +167,7 @@ function loadSync(){
   let cfg=readJSON(SYNC_KEY,null);
   const h=location.hash.replace(/^#/,"");
   if(h){
-    const p=new URLSearchParams(h),db=(p.get("db")||"").replace(/\/+$/,""),room=p.get("room")||"";
+    const p=new URLSearchParams(h),db=(p.get("db")||DEFAULT_DB).replace(/\/+$/,""),room=p.get("room")||"";
     if(okDb(db)&&okRoom(room)){
       const n={db,room,ro:p.get("view")==="1"};
       const same=cfg&&cfg.db===n.db&&cfg.room===n.room&&!!cfg.ro===n.ro;
@@ -445,16 +449,23 @@ const SITE_KEY="korokoro_site_base";
 function readStr(k){try{return localStorage.getItem(k)||"";}catch(e){return "";}}
 function siteBase(){if(location.protocol!=="file:")return location.href.split("#")[0];const v=readStr(SITE_KEY);return /^https:\/\//i.test(v)?v.split("#")[0]:"";}
 function shareLink(ro){const b=siteBase();if(!b)return "（上の「公開したサイトのURL」を入れると、ここにリンクが出ます）";
-  return b+"#db="+encodeURIComponent(SYNC.db)+"&room="+SYNC.room+(ro?"&view=1":"");}
-function refreshLinks(){if(!SYNC)return;if(!RO())$("linkEdit").value=shareLink(false);$("linkView").value=shareLink(true);}
+  return b+"#"+(DEFAULT_DB&&SYNC.db===DEFAULT_DB.replace(/\/+$/,"")?"":"db="+encodeURIComponent(SYNC.db)+"&")+"room="+SYNC.room+(ro?"&view=1":"");}
+function refreshLinks(){if(!SYNC)return;if(!RO())$("linkEdit").value=shareLink(false);$("linkView").value=shareLink(true);drawQr();}
+/* 編集リンクをQRコードにする（ライブラリは、ダイアログを開いたときだけ読み込む） */
+let qrLib=null;
+function loadQrLib(){if(window.qrcode)return Promise.resolve();if(qrLib)return qrLib;
+  qrLib=new Promise((ok,ng)=>{const sc=document.createElement("script");sc.src="https://unpkg.com/qrcode-generator@1.4.4/qrcode.js";sc.onload=ok;sc.onerror=()=>{qrLib=null;ng();};document.head.appendChild(sc);});return qrLib;}
+function drawQr(){const box=$("qrBox"),row=$("rowQr");if(!box)return;
+  const link=RO()?"":shareLink(false);row.hidden=!/^https?:\/\//.test(link);if(row.hidden)return;
+  loadQrLib().then(()=>{const q=qrcode(0,"M");q.addData(link);q.make();box.innerHTML=q.createSvgTag({cellSize:4,margin:2,scalable:true});}).catch(()=>{box.textContent="（QRコードを表示できませんでした。下のリンクを送ってください）";});}
 function openSync(){
   const on=!!SYNC;
-  $("syncOff").hidden=on;$("syncOn").hidden=!on;$("siteRow").hidden=location.protocol!=="file:";$("siteBase").value=readStr(SITE_KEY);
+  $("syncOff").hidden=on;$("syncOn").hidden=!on;$("siteRow").hidden=location.protocol!=="file:";$("rowDb").hidden=!!DEFAULT_DB;$("siteBase").value=readStr(SITE_KEY);
   if(on){$("rowEdit").hidden=RO();refreshLinks();setChip(syncMsg||"未同期");}
   const d=$("syncDlg");if(d.showModal){if(!d.open)d.showModal();}else d.setAttribute("open","");
 }
 async function createRoom(){
-  const db=$("syncDb").value.trim().replace(/\/+$/,"");
+  const db=(DEFAULT_DB||$("syncDb").value.trim()).replace(/\/+$/,"");
   if(!okDb(db)){alert("URLは https://〜.firebasedatabase.app または https://〜.firebaseio.com の形で入力してください。");return;}
   const room=Array.from(crypto.getRandomValues(new Uint8Array(18)),b=>b.toString(16).padStart(2,"0")).join("");
   SYNC={db,room,ro:false};
